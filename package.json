@@ -1,0 +1,46 @@
+{
+  "name": "ghost-in-the-express",
+  "version": "1.0.0",
+  "description": "Spooky screen animation sequence with Ghost in The Shell theme (synced on all connected monitors)",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server --hot --config webpack.config.js --inline --progress --profile --colors --watch --display-error-details --display-cached --content-base build/",
+    "build": "webpack",
+    "build:watch": "webpack --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dxn7335/ghost-in-the-express.git"
+  },
+  "author": "Danny Nguyen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dxn7335/ghost-in-the-express/issues"
+  },
+  "homepage": "https://github.com/dxn7335/ghost-in-the-express#readme",
+  "dependencies": {
+    "babelify": "^7.3.0",
+    "browserify": "^13.1.0",
+    "express": "^4.14.0",
+    "react": "^15.3.2",
+    "socket.io": "^1.5.0",
+    "babel-core": "^6.14.0",
+    "babel-loader": "^6.2.5",
+    "babel-preset-es2015": "^6.14.0",
+    "css-loader": "^0.24.0",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "file-loader": "^0.9.0",
+    "html-webpack-plugin": "^2.22.0",
+    "node-sass": "^3.8.0",
+    "sass-loader": "^4.0.0",
+    "style-loader": "^0.13.1",
+    "url-loader": "^0.5.7",
+    "webpack": "^1.13.2"
+  }
+}
