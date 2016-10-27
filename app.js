@@ -7,10 +7,11 @@
 var express = require('express');
 var http = require('http');
 
-var socket = require('./routes/socket.js');
+var socket = require('./sockets/sockets.js');
 
 var app = express();
 var server = http.createServer(app);
+var io = require('socket.io').listen(server);
 
 /* Configuration */
 app.set('views', __dirname + '/views');
@@ -22,7 +23,6 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 /* Socket.io Communication */
-var io = require('socket.io').listen(server);
 io.sockets.on('connection', socket);
 
 /* Start server */

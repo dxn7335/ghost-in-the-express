@@ -8,7 +8,7 @@ module.exports = {
   },
 
   output: {
-    path: path.resolve('build'),
+    path: path.resolve('public'),
     filename: '[name].js',
   },
 
@@ -16,8 +16,12 @@ module.exports = {
     loaders: [
       {
         test: /\.js$|\.jsx$/,
-        exclude: /(node_modules|build)/,
+        exclude: /(node_modules|public)/,
         loader: 'babel-loader',
+      },
+      { 
+        test: /\.json$/, 
+        loader: 'json-loader' 
       },
       {
         test: /\.scss$/,
@@ -32,6 +36,13 @@ module.exports = {
         loader: 'file-loader?name=fonts/[name].[ext]'
       },
     ],
+  },
+
+  node: {
+    console: true,
+    fs: 'empty',
+    net: 'empty',
+    tls: 'empty'
   },
 
   plugins: [
