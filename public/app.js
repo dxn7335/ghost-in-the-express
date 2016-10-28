@@ -22555,8 +22555,6 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -22587,7 +22585,7 @@
 	      socket.on('message:new', this.handleRecieveMessage.bind(this));
 	      socket.on('command:set', this.setCommand.bind(this));
 
-	      this.speak("I'm ready");
+	      this.speak("I'm ready, bitch");
 	    }
 	  }, {
 	    key: 'handleRecieveMessage',
@@ -22615,23 +22613,29 @@
 	        voice: voices[10], // Note: some voices don't support altering params
 	        voiceURI: 'native',
 	        volume: 1, // 0 to 1
-	        rate: 1.2, // 0.1 to 10
-	        pitch: 1.3, //0 to 2
+	        rate: 1.3, // 0.1 to 10
+	        pitch: Math.random() * (2 + 0), //0 to 2
 	        lang: 'en-US'
 	      };
 
-	      msg.onend = function (e) {
-	        console.log('Finished in ' + event.elapsedTime + ' seconds.');
-	      };
-	      console.log(msg);
 	      return msg;
 	    }
 	  }, {
 	    key: 'speak',
 	    value: function speak(message) {
+	      var speechSpec = this.state.speech;
 	      var msg = new SpeechSynthesisUtterance();
-	      msg = Object.assign.apply(Object, [msg, { text: message }].concat(_toConsumableArray(this.state.speech)));
+	      msg = Object.assign(msg, {
+	        text: message,
+	        rate: speechSpec.rate,
+	        pitch: speechSpec.pitch
+	      });
 
+	      msg.onend = function (e) {
+	        console.log('Finished in ' + event.elapsedTime + ' seconds.');
+	      };
+
+	      console.log(msg);
 	      window.speechSynthesis.speak(msg);
 	    }
 	  }, {

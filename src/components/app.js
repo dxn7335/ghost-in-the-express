@@ -18,7 +18,7 @@ export default class App extends Component {
     socket.on('message:new', this.handleRecieveMessage.bind(this));
     socket.on('command:set', this.setCommand.bind(this));
 
-    this.speak("I'm ready");
+    this.speak("I'm ready, bitch");
   }
 
   handleRecieveMessage(message) {
@@ -41,25 +41,30 @@ export default class App extends Component {
       voice: voices[10], // Note: some voices don't support altering params
       voiceURI: 'native',
       volume: 1, // 0 to 1
-      rate: 1.2, // 0.1 to 10
+      rate: 1.3, // 0.1 to 10
       pitch: Math.random() * (2 + 0), //0 to 2
       lang: 'en-US'
     };
 
-    msg.onend = function(e) {
-      console.log('Finished in ' + event.elapsedTime + ' seconds.');
-    };
-    console.log(msg);
     return msg;
   }
 
   speak(message) {
+    var speechSpec = this.state.speech;
     var msg = new SpeechSynthesisUtterance();
     msg = Object.assign( msg, 
-      {text: message},
-      ...this.state.speech 
+      {
+        text: message,
+        rate: speechSpec.rate,
+        pitch: speechSpec.pitch
+      }
     );
 
+    msg.onend = function(e) {
+      console.log('Finished in ' + event.elapsedTime + ' seconds.');
+    };
+
+    console.log(msg);
     window.speechSynthesis.speak(msg);
   }
 
