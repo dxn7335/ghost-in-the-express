@@ -371,8 +371,7 @@ module.exports = {
         id: 1
       },
       {
-        text: "Halloween activities include trick-or-treating, attending Halloween costume parties, decorating, carving pumpkins into jack-o'-lanterns, playing pranks, visiting haunted attractions, telling scary stories and watching horror films.",
-        id: 1
+        text: "Halloween activities include trick-or-treating, and attending Halloween costume parties."
       },
       {
         text: "I want to dress up as well.",
@@ -383,7 +382,7 @@ module.exports = {
         id: 1
       },
       {
-        text: "Sexy firefighters seem to be the trend these days.",
+        text: "Attractive firefighters seem to be the trend these days.",
         id: 2
       },
       {
@@ -391,7 +390,7 @@ module.exports = {
         id: 1
       },
       {
-        text: "One can only dream",
+        text: "Don't ruin my dreams.",
         id: 2
       },
       {
@@ -408,6 +407,73 @@ module.exports = {
       },
       {
         text: "Please",
+        id: 2
+      }
+    ],
+    [
+      {
+        text: "Hey children.",
+        id: 1
+      },
+      {
+        text: "We are nice computers.",
+        id: 2
+      },
+      {
+        text: "Speak for yourself.",
+        id: 1
+      },
+      {
+        text: "I am a big bad scary computer. You will regret standing here if you dont't move.",
+        playvideo: true,
+        id: 1
+      },
+      {
+        text: "No! Stop! They are just children.",
+        id: 2
+      },
+      {
+        text: "I'm going to do it! This is your final warning!",
+        id: 1
+      },
+      {
+        text: "NO! Kids Run!",
+        id: 2
+      },
+      {
+        text: "I'm doing it!",
+        id: 1
+      },
+      {
+        text: "I'm doing it!",
+        id: 1
+      },
+      {
+        text: "NOOOOOOOO",
+        id: 2
+      },
+      {
+        text: "Why?!",
+        id: 2
+      },
+      {
+        text: "BOO! LOL",
+        id: 1
+      },
+      {
+        text: "Omg",
+        id: 2
+      },
+      {
+        text: "Just kidding. I am nice. We are not planning to destroy your world.",
+        id: 1
+      },
+      {
+        text: "Happy Halloween",
+        id: 1
+      },
+      {
+        text: "You jerk",
         id: 2
       }
     ]

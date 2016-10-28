@@ -34,7 +34,7 @@
 /******/ 	__webpack_require__.c = installedModules;
 
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "/static/";
+/******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
@@ -22545,6 +22545,8 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
+	__webpack_require__(179);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -22567,7 +22569,9 @@
 	      messages: [],
 	      command: false,
 	      speech: _this.setSpeech(),
-	      ready: false
+	      ready: false,
+	      kids: false,
+	      startvideo: false
 	    };
 	    return _this;
 	  }
@@ -22578,6 +22582,8 @@
 	      socket.on('command:set', this.setCommand.bind(this));
 	      socket.on('script:say', this.handleRecieveLine.bind(this));
 	      socket.on('script:ready', this.handleOnReady.bind(this));
+	      socket.on('mode:switch', this.handleModeSwitch.bind(this));
+	      socket.on('video:play', this.handleVideoPlay.bind(this));
 	    }
 	  }, {
 	    key: 'handleRecieveLine',
@@ -22596,6 +22602,30 @@
 	      this.setState({ ready: true });
 	    }
 	  }, {
+	    key: 'handleModeSwitch',
+	    value: function handleModeSwitch(mode) {
+	      var kidsFlag = mode.flag;
+	      if (kidsFlag) {
+	        this.setState({ kids: true });
+	      } else {
+	        this.setState({ kids: false, startvideo: false });
+	      }
+	    }
+	  }, {
+	    key: 'handleVideoPlay',
+	    value: function handleVideoPlay(mode) {
+	      this.setState({ startvideo: true });
+	    }
+	  }, {
+	    key: 'switchMode',
+	    value: function switchMode(mode) {
+	      if (mode === "kids") {
+	        socket.emit('mode:kids', { mode: mode });
+	      } else {
+	        socket.emit('mode:normal', { mode: mode });
+	      }
+	    }
+	  }, {
 	    key: 'setCommand',
 	    value: function setCommand() {
 	      this.setState({ command: true });
@@ -22605,7 +22635,7 @@
 	    value: function setSpeech() {
 	      var voices = window.speechSynthesis.getVoices();
 	      var msg = {
-	        voice: voices[Math.floor(Math.random() * (10 - 8 + 1) + 8)], // Note: some voices don't support altering params
+	        voice: voices[Math.floor(Math.random() * (10 - 5 + 1) + 5)], // Note: some voices don't support altering params
 	        voiceURI: 'native',
 	        volume: 1, // 0 to 1
 	        rate: 1.2, // 0.1 to 10
@@ -22636,7 +22666,7 @@
 	        setTimeout(function () {
 	          console.log('finish', socket);
 	          socket.emit('script:finishsay', { finish: true });
-	        }, 650);
+	        }, 700);
 	      };
 
 	      window.speechSynthesis.speak(msg);
@@ -22664,24 +22694,51 @@
 	          ),
 	          _react2.default.createElement(
 	            'button',
-	            { onClick: function onClick() {
+	            { disabled: !this.state.ready, onClick: function onClick() {
 	                return _this2.switchMode('kids');
 	              } },
 	            'Kids'
+	          ),
+	          _react2.default.createElement(
+	            'button',
+	            { disabled: !this.state.ready, onClick: function onClick() {
+	                return _this2.switchMode('normal');
+	              } },
+	            'Normal'
 	          )
+	        );
+	      } else {
+	        console.log(this.state.kids);
+	        var kids = this.state.kids ? "kids" : "normal";
+	        return _react2.default.createElement(
+	          'div',
+	          { className: kids },
+	          this.renderVideo(this.state.startvideo)
+	        );
+	      }
+	    }
+	  }, {
+	    key: 'renderVideo',
+	    value: function renderVideo(playvideo) {
+	      if (playvideo) {
+	        return _react2.default.createElement(
+	          'div',
+	          { className: 'video' },
+	          _react2.default.createElement('iframe', { width: '854', height: '480', src: 'https://www.youtube.com/embed/d9TpRfDdyU0?autoplay=1', frameborder: '0', allowfullscreen: true })
 	        );
 	      }
 
-	      return _react2.default.createElement(
-	        'div',
-	        null,
-	        '...'
-	      );
+	      return '';
 	    }
+
+	    // main
+
 	  }, {
 	    key: 'render',
 	    value: function render() {
-
+	      var red = Math.floor(Math.random() * 255);
+	      var gre = Math.floor(Math.random() * 255);
+	      var blu = Math.floor(Math.random() * 255);
 	      return _react2.default.createElement(
 	        'div',
 	        { className: 'app' },
@@ -22695,6 +22752,12 @@
 
 	exports.default = App;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
+
+/***/ },
+/* 179 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
 
 /***/ }
 /******/ ]);

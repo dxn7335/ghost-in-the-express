@@ -12,17 +12,6 @@ var io = require('socket.io').listen(server);
 
 /* Configuration */
 app.set('views', __dirname + '/views');
-if (process.env.NODE_ENV === 'development') {
-  var webpack = require('webpack');
-  var webpackDevMiddleware = require('webpack-dev-middleware');
-  var webpackHotMiddleware = require('webpack-hot-middleware');
-  var config = require('./webpack.config');
-  var compiler = webpack(config);
-
-  app.use(webpackDevMiddleware(compiler, { noInfo: true, publicPath: config.output.publicPath }));
-  app.use(webpackHotMiddleware(compiler));
-  app.use(express.static(__dirname + 'webpack-dev-middleware/client?dynamicPublicPath=true'));
-}
 app.use(express.static(__dirname + '/public'));
 app.set('port', 3000);
 
@@ -66,9 +55,22 @@ io.sockets.on('connection', function (socket) {
     let line = $scene.getScriptLine();
     let participant = $scene.participants[line.id].socket;
     console.log(line.text, participant);
+    if (line.playvideo) {
+      io.to(participant).emit('video:play', {video: true});
+    }
     // send line to correct person
     io.to(participant).emit('script:say', {text:line.text});
   });
+
+  socket.on('mode:kids', function(flag) {
+    $scene.switchMode('kids');
+    socket.broadcast.emit('mode:switch', {flag: true});
+  })
+
+  socket.on('mode:normal', function(flag) {
+    $scene.switchMode('normal');
+    socket.broadcast.emit('mode:switch', {flag: false});
+  })
 
   /**
    *  disconnect

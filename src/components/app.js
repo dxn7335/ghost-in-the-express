@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-
+import '../styles/body.scss';
 const socket = io.connect();
 
 export default class App extends Component {
@@ -10,6 +10,8 @@ export default class App extends Component {
       command: false,
       speech: this.setSpeech(),
       ready: false,
+      kids: false,
+      startvideo: false
     };
   }
 
@@ -17,6 +19,8 @@ export default class App extends Component {
     socket.on('command:set', this.setCommand.bind(this));
     socket.on('script:say', this.handleRecieveLine.bind(this));
     socket.on('script:ready', this.handleOnReady.bind(this));
+    socket.on('mode:switch', this.handleModeSwitch.bind(this));
+    socket.on('video:play', this.handleVideoPlay.bind(this));
   }
 
   handleRecieveLine(line) {
@@ -32,6 +36,27 @@ export default class App extends Component {
     this.setState({ready: true});
   }
 
+  handleModeSwitch(mode) {
+    var kidsFlag = mode.flag;
+    if (kidsFlag) {
+      this.setState({ kids: true });
+    } else {
+      this.setState({ kids: false, startvideo: false });
+    }
+  }
+
+  handleVideoPlay(mode) {
+    this.setState({startvideo: true});
+  }
+
+  switchMode(mode) {
+    if (mode === "kids") {
+      socket.emit('mode:kids', {mode: mode});
+    } else {
+      socket.emit('mode:normal', {mode: mode});
+    }
+  }
+
   setCommand() {
     this.setState({command: true});
   }
@@ -39,7 +64,7 @@ export default class App extends Component {
   setSpeech() {
     var voices = window.speechSynthesis.getVoices();
     var msg = {
-      voice: voices[Math.floor(Math.random() * (10 - 8 + 1) + 8)], // Note: some voices don't support altering params
+      voice: voices[Math.floor(Math.random() * (10 - 5 + 1) + 5)], // Note: some voices don't support altering params
       voiceURI: 'native',
       volume: 1, // 0 to 1
       rate: 1.2, // 0.1 to 10
@@ -70,7 +95,7 @@ export default class App extends Component {
       setTimeout( function() {
         console.log('finish', socket);
         socket.emit('script:finishsay', {finish: true})
-      }, 600);
+      }, 700);
     };
 
     window.speechSynthesis.speak(msg);
@@ -86,19 +111,37 @@ export default class App extends Component {
         <div>
           <button disabled={!this.state.ready} onClick={() => this.startConversation()}>Start</button>
           <button disabled={!this.state.ready} onClick={() => this.switchMode('kids')}>Kids</button>
+          <button disabled={!this.state.ready} onClick={() => this.switchMode('normal')}>Normal</button>
         </div>
       )
-    } 
-
-    return (
-      <div>
-      ...
-      </div>
-    )
+    } else {
+      console.log(this.state.kids);
+      const kids = (this.state.kids) ? "kids" : "normal";
+      return (
+        <div className={kids}>
+          {this.renderVideo(this.state.startvideo)}
+        </div>
+      )
+    }
   }
 
-  render() {
+  renderVideo(playvideo) {
+    if(playvideo) {
+      return (
+        <div className="video">
+          <iframe width="854" height="480" src="https://www.youtube.com/embed/d9TpRfDdyU0?autoplay=1" frameborder="0" allowfullscreen></iframe>
+        </div>
+      )
+    }
 
+    return ('');
+  }
+
+  // main
+  render() {
+    const red = Math.floor(Math.random() * 255);
+    const gre = Math.floor(Math.random() * 255);
+    const blu = Math.floor(Math.random() * 255);
     return ( 
       <div className="app">
         { this.renderContent(this.state.command) }

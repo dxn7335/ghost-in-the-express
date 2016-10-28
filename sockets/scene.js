@@ -25,6 +25,11 @@ s.getParticipant = function(socket) {
   return p;
 };
 
+s.switchMode = function(mode) {
+  this.mode = mode;
+  this.scenario = this.setScenario();
+}
+
 s.removeParticipant = function(socket) {
   const p = this.participants;
   for ( let i=0; i<p.length; i++ ) {
