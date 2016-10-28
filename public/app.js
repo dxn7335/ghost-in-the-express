@@ -22545,14 +22545,6 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _messages = __webpack_require__(179);
-
-	var _messages2 = _interopRequireDefault(_messages);
-
-	var _input = __webpack_require__(180);
-
-	var _input2 = _interopRequireDefault(_input);
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -22574,7 +22566,8 @@
 	    _this.state = {
 	      messages: [],
 	      command: false,
-	      speech: _this.setSpeech()
+	      speech: _this.setSpeech(),
+	      ready: false
 	    };
 	    return _this;
 	  }
@@ -22582,23 +22575,25 @@
 	  _createClass(App, [{
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
-	      socket.on('message:new', this.handleRecieveMessage.bind(this));
 	      socket.on('command:set', this.setCommand.bind(this));
-
-	      this.speak("I'm ready, bitch");
+	      socket.on('script:say', this.handleRecieveLine.bind(this));
+	      socket.on('script:ready', this.handleOnReady.bind(this));
 	    }
 	  }, {
-	    key: 'handleRecieveMessage',
-	    value: function handleRecieveMessage(message) {
-	      var messages = this.state.messages;
-
-	      messages.push(message);
-	      this.setState(messages);
+	    key: 'handleRecieveLine',
+	    value: function handleRecieveLine(line) {
+	      console.log("new line", line);
+	      this.speak(line.text);
 	    }
 	  }, {
 	    key: 'handleSendMessage',
 	    value: function handleSendMessage(message) {
 	      socket.emit('send:message', message);
+	    }
+	  }, {
+	    key: 'handleOnReady',
+	    value: function handleOnReady() {
+	      this.setState({ ready: true });
 	    }
 	  }, {
 	    key: 'setCommand',
@@ -22610,15 +22605,20 @@
 	    value: function setSpeech() {
 	      var voices = window.speechSynthesis.getVoices();
 	      var msg = {
-	        voice: voices[10], // Note: some voices don't support altering params
+	        voice: voices[Math.floor(Math.random() * (10 - 8 + 1) + 8)], // Note: some voices don't support altering params
 	        voiceURI: 'native',
 	        volume: 1, // 0 to 1
-	        rate: 1.3, // 0.1 to 10
-	        pitch: Math.random() * (2 + 0), //0 to 2
+	        rate: 1.2, // 0.1 to 10
+	        pitch: Math.random() * (1.6 + 0), //0 to 2
 	        lang: 'en-US'
 	      };
 
 	      return msg;
+	    }
+	  }, {
+	    key: 'startConversation',
+	    value: function startConversation() {
+	      socket.emit('script:start', { start: 'true' });
 	    }
 	  }, {
 	    key: 'speak',
@@ -22628,28 +22628,64 @@
 	      msg = Object.assign(msg, {
 	        text: message,
 	        rate: speechSpec.rate,
-	        pitch: speechSpec.pitch
+	        pitch: speechSpec.pitch,
+	        voice: speechSpec.voice
 	      });
 
 	      msg.onend = function (e) {
-	        console.log('Finished in ' + event.elapsedTime + ' seconds.');
+	        setTimeout(function () {
+	          console.log('finish', socket);
+	          socket.emit('script:finishsay', { finish: true });
+	        }, 650);
 	      };
 
-	      console.log(msg);
 	      window.speechSynthesis.speak(msg);
+	    }
+
+	    /**
+	     * RENDER
+	     */
+
+	  }, {
+	    key: 'renderContent',
+	    value: function renderContent(command) {
+	      var _this2 = this;
+
+	      if (this.state.command) {
+	        return _react2.default.createElement(
+	          'div',
+	          null,
+	          _react2.default.createElement(
+	            'button',
+	            { disabled: !this.state.ready, onClick: function onClick() {
+	                return _this2.startConversation();
+	              } },
+	            'Start'
+	          ),
+	          _react2.default.createElement(
+	            'button',
+	            { onClick: function onClick() {
+	                return _this2.switchMode('kids');
+	              } },
+	            'Kids'
+	          )
+	        );
+	      }
+
+	      return _react2.default.createElement(
+	        'div',
+	        null,
+	        '...'
+	      );
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _this2 = this;
 
 	      return _react2.default.createElement(
 	        'div',
 	        { className: 'app' },
-	        _react2.default.createElement(_input2.default, { onSubmit: function onSubmit(msg) {
-	            return _this2.handleSendMessage(msg);
-	          } }),
-	        _react2.default.createElement(_messages2.default, { messages: this.state.messages })
+	        this.renderContent(this.state.command)
 	      );
 	    }
 	  }]);
@@ -22659,139 +22695,6 @@
 
 	exports.default = App;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
-
-/***/ },
-/* 179 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(console) {'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var Messages = function (_Component) {
-	  _inherits(Messages, _Component);
-
-	  function Messages() {
-	    _classCallCheck(this, Messages);
-
-	    return _possibleConstructorReturn(this, (Messages.__proto__ || Object.getPrototypeOf(Messages)).apply(this, arguments));
-	  }
-
-	  _createClass(Messages, [{
-	    key: 'render',
-	    value: function render() {
-	      var messages = this.props.messages;
-
-	      console.log('messages', messages);
-	      return _react2.default.createElement(
-	        'div',
-	        { className: 'messages' },
-	        messages.map(function (message, i) {
-	          return _react2.default.createElement(
-	            'p',
-	            { key: i },
-	            message.text
-	          );
-	        })
-	      );
-	    }
-	  }]);
-
-	  return Messages;
-	}(_react.Component);
-
-	Messages.PropTypes = {
-	  messages: _react.PropTypes.array
-	};
-
-	exports.default = Messages;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
-
-/***/ },
-/* 180 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var Input = function (_Component) {
-	  _inherits(Input, _Component);
-
-	  function Input() {
-	    _classCallCheck(this, Input);
-
-	    return _possibleConstructorReturn(this, (Input.__proto__ || Object.getPrototypeOf(Input)).apply(this, arguments));
-	  }
-
-	  _createClass(Input, [{
-	    key: "handleSubmit",
-	    value: function handleSubmit(callback) {
-	      callback(this.refs.input.value);
-	      this.refs.input.value = "";
-	    }
-	  }, {
-	    key: "render",
-	    value: function render() {
-	      var _this2 = this;
-
-	      var onSubmit = this.props.onSubmit;
-
-	      return _react2.default.createElement(
-	        "div",
-	        { className: "input" },
-	        _react2.default.createElement("input", { ref: "input", type: "text", maxLength: "40" }),
-	        _react2.default.createElement(
-	          "button",
-	          { onClick: function onClick() {
-	              return _this2.handleSubmit(onSubmit);
-	            } },
-	          "Submit"
-	        )
-	      );
-	    }
-	  }]);
-
-	  return Input;
-	}(_react.Component);
-
-	Input.PropTypes = {
-	  onSubmit: _react.PropTypes.func
-	};
-
-	exports.default = Input;
 
 /***/ }
 /******/ ]);

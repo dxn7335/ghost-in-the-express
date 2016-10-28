@@ -4,7 +4,7 @@
   "description": "Spooky screen animation sequence with Ghost in The Shell theme (synced on all connected monitors)",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=development node app.js",
+    "start": "NODE_ENV=development node server.js",
     "startwatch": "webpack-dev-server --hot --config webpack.config.js --inline --progress --profile --colors --watch --display-error-details --display-cached --content-base build/",
     "build": "webpack",
     "build:watch": "webpack --watch",

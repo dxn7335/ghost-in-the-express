@@ -1,6 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import Messages from './messages';
-import Input from './input';
 
 const socket = io.connect();
 
@@ -10,25 +8,28 @@ export default class App extends Component {
     this.state = {
       messages: [],
       command: false,
-      speech: this.setSpeech()
+      speech: this.setSpeech(),
+      ready: false,
     };
   }
 
   componentDidMount() {
-    socket.on('message:new', this.handleRecieveMessage.bind(this));
     socket.on('command:set', this.setCommand.bind(this));
-
-    this.speak("I'm ready, bitch");
+    socket.on('script:say', this.handleRecieveLine.bind(this));
+    socket.on('script:ready', this.handleOnReady.bind(this));
   }
 
-  handleRecieveMessage(message) {
-    const { messages } = this.state;
-    messages.push(message);
-    this.setState(messages);
+  handleRecieveLine(line) {
+    console.log("new line", line);
+    this.speak(line.text);
   }
 
   handleSendMessage(message) {
     socket.emit('send:message', message);
+  }
+
+  handleOnReady() {
+    this.setState({ready: true});
   }
 
   setCommand() {
@@ -38,15 +39,19 @@ export default class App extends Component {
   setSpeech() {
     var voices = window.speechSynthesis.getVoices();
     var msg = {
-      voice: voices[10], // Note: some voices don't support altering params
+      voice: voices[Math.floor(Math.random() * (10 - 8 + 1) + 8)], // Note: some voices don't support altering params
       voiceURI: 'native',
       volume: 1, // 0 to 1
-      rate: 1.3, // 0.1 to 10
-      pitch: Math.random() * (2 + 0), //0 to 2
+      rate: 1.2, // 0.1 to 10
+      pitch: Math.random() * (1.6 + 0), //0 to 2
       lang: 'en-US'
     };
 
     return msg;
+  }
+
+  startConversation() {
+    socket.emit('script:start', {start: 'true'});
   }
 
   speak(message) {
@@ -56,24 +61,47 @@ export default class App extends Component {
       {
         text: message,
         rate: speechSpec.rate,
-        pitch: speechSpec.pitch
+        pitch: speechSpec.pitch,
+        voice: speechSpec.voice
       }
     );
 
     msg.onend = function(e) {
-      console.log('Finished in ' + event.elapsedTime + ' seconds.');
+      setTimeout( function() {
+        console.log('finish', socket);
+        socket.emit('script:finishsay', {finish: true})
+      }, 600);
     };
 
-    console.log(msg);
     window.speechSynthesis.speak(msg);
+  }
+
+  /**
+   * RENDER
+   */
+
+  renderContent(command) {
+    if (this.state.command) {
+      return (
+        <div>
+          <button disabled={!this.state.ready} onClick={() => this.startConversation()}>Start</button>
+          <button disabled={!this.state.ready} onClick={() => this.switchMode('kids')}>Kids</button>
+        </div>
+      )
+    } 
+
+    return (
+      <div>
+      ...
+      </div>
+    )
   }
 
   render() {
 
     return ( 
       <div className="app">
-        <Input onSubmit={(msg) => this.handleSendMessage(msg)} />
-        <Messages messages={this.state.messages}/>
+        { this.renderContent(this.state.command) }
       </div>
     );
   }
