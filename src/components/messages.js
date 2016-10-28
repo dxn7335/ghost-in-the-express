@@ -4,11 +4,12 @@ class Messages extends Component {
 
   render() {
     const { messages } = this.props;
+    console.log('messages', messages);
     return ( 
       <div className="messages">
         {
           messages.map( (message, i) => {
-            return ( <p key={i}>{message}</p> );
+            return ( <p key={i}>{message.text}</p> );
           })
         }
       </div>

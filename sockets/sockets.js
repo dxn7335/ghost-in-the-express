@@ -2,7 +2,7 @@
 module.exports = function (socket) {
   
   const name = Math.random();
-
+  console.log(name, 'joined');
   // send the new user their name and a list of users
   socket.emit('init', function(socket) {
     console.log(name, 'joined');
@@ -17,10 +17,10 @@ module.exports = function (socket) {
   });
 
   // broadcast a user's message to other users
-  socket.on('send:message', function (data) {
-    socket.broadcast.emit('send:message', {
+  socket.on('send:message', function (msg) {
+    socket.broadcast.emit('message:new', {
       user: name,
-      text: data.text
+      text: msg
     });
   });
 

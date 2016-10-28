@@ -4,8 +4,8 @@
   "description": "Spooky screen animation sequence with Ghost in The Shell theme (synced on all connected monitors)",
   "main": "index.js",
   "scripts": {
-    "start": "npm run build && node app.js",
-    "startclient": "webpack-dev-server --hot --config webpack.config.js --inline --progress --profile --colors --watch --display-error-details --display-cached --content-base build/",
+    "start": "NODE_ENV=development node app.js",
+    "startwatch": "webpack-dev-server --hot --config webpack.config.js --inline --progress --profile --colors --watch --display-error-details --display-cached --content-base build/",
     "build": "webpack",
     "build:watch": "webpack --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -38,6 +38,7 @@
     "extract-text-webpack-plugin": "^1.0.1",
     "file-loader": "^0.9.0",
     "html-webpack-plugin": "^2.22.0",
+    "lodash": "^4.16.4",
     "node-sass": "^3.8.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
@@ -49,6 +50,8 @@
     "webpack-dev-server": "^1.16.2"
   },
   "devDependencies": {
-    "json-loader": "^0.5.4"
+    "json-loader": "^0.5.4",
+    "webpack-dev-middleware": "^1.8.4",
+    "webpack-hot-middleware": "^2.13.0"
   }
 }
